@@ -4,24 +4,20 @@ public class Pawn extends Piece
     {
         this.direction = direction;
         upgrade = false;
+        pieceType = "pawn";
         pieceName = "歩兵";
     }
 
     public Pawn()
     { this(1); }
 
-    public boolean isValid(Tile curr, Tile target)
+    public boolean isValid(int currLocation, int targetLocation)
     {
-        if(target.getLocation() > 100 || target.getLocation() < 0) {
-            return false;
-        }
+        int rowDist = currLocation / 10 - targetLocation / 10;
+        int colDist = currLocation % 10 - targetLocation % 10;
 
-        int rowDist = curr.getLocation() / 10 - target.getLocation() / 10;
-        int colDist = curr.getLocation() % 10 - target.getLocation() % 10;
-
-        /* Promoted pawn movement */
+        /* Promoted pawn movement (look to GoldG class for description) */
         if(upgrade) {
-            /* Checks if column changes first to determine simply vertical or horizontal movement included */
             if(colDist == direction || colDist == direction * -1) {
                 return rowDist == 0 || rowDist == direction;
             } else {
@@ -36,6 +32,6 @@ public class Pawn extends Piece
     public void promote()
     {
         upgrade = true;
-        pieceName = " と ";
+        pieceName = "と　";
     }
 }
