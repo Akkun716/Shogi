@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import javax.xml.namespace.QName;
-
 public class Board
 {
     private final String[] PIECES = {"pawn", "lance", "knight", "silver", "gold", "bishop", "rook", "king"};
@@ -88,6 +86,21 @@ public class Board
             case "knight":
                 board[row][col] = new Knight(gote ? -1 : 1);
                 break;
+            case "silver":
+                board[row][col] = new SilverG(gote ? -1 : 1);
+                break;
+            case "gold":
+                board[row][col] = new GoldG(gote ? -1 : 1);
+                break;
+            case "bishop":
+                board[row][col] = new Bishop(gote ? -1 : 1);
+                break;
+            case "rook":
+                board[row][col] = new Rook(gote ? -1 : 1);
+                break;
+            case "king":
+                board[row][col] = new King(gote ? -1 : 1);
+                break;
             default:
                 board[row][col] = new Pawn(gote ? -1 : 1);
         }
@@ -104,6 +117,19 @@ public class Board
         for(int col = 0; col < board[0].length; col++) {
             createPiece(piece, row, col, gote);
         }
+    }
+
+    public void createDefaultKingRow(int row, boolean gote)
+    {
+        createPiece("lance", row, 0, gote);
+        createPiece("lance", row, 8, gote);
+        createPiece("knight", row, 1, gote);
+        createPiece("knight", row, 7, gote);
+        createPiece("silver", row, 2, gote);
+        createPiece("silver", row, 6, gote);
+        createPiece("gold", row, 3, gote);
+        createPiece("gold", row, 5, gote);
+        createPiece("king", row, 4, gote);
     }
 
     /** 
@@ -130,13 +156,20 @@ public class Board
             setPiece(currRow, col, tarRow, col);
         }
     }
+
+    public Piece getPiece(int row, int col)
+    { return board[row][col]; }
     
-    public void setDefaultBoard()
+    public void createDefaultBoard()
     {
-        createPiece("lance", 0, 0, true);
-        createPiece("lance", 8, 0, true);
+        createDefaultKingRow(0, true);
+        createPiece("rook", 1, 1, true);
+        createPiece("bishop", 1, 7, true);
         createRow("pawn", 2, true);
         createRow("pawm", 6, false);
+        createPiece("bishop", 7, 1, false);
+        createPiece("rook", 7, 7, false);
+        createDefaultKingRow(8, false);
     }
 
     public boolean isValid(int currLocation, int targetLocation)
@@ -144,10 +177,19 @@ public class Board
         Piece currPiece = board[currLocation / 10][currLocation % 10];
         if(currPiece.isValid(currLocation, targetLocation)) {
             System.out.printf("The location is valid!\n");
-            int currRow = currLocation / 10 > targetLocation / 10 ? targetLocation / 10 : currLocation / 10;
-            int currCol = currLocation % 10 > targetLocation % 10 ? targetLocation % 10 : currLocation % 10;
-            int tarRow = currRow == currLocation / 10 ? targetLocation / 10 : currLocation / 10;
-            int tarCol = currCol == currLocation % 10 ? targetLocation % 10 : currLocation % 10;
+            /* This "rearranges" the current and target rows and columns for simpler loop propogation */
+            int currRow, currCol, tarRow, tarCol;
+            if(currLocation / 10 > targetLocation / 10 || currLocation % 10 > targetLocation % 10) {
+                currRow =  targetLocation / 10;
+                currCol =  targetLocation % 10;
+                tarRow = currLocation / 10;
+                tarCol = currLocation % 10;
+            } else {
+                currRow =  currLocation / 10;
+                currCol =  currLocation % 10;
+                tarRow = targetLocation / 10;
+                tarCol = targetLocation % 10;
+            }
 
             switch(currPiece.pieceType()) {
                 case "lance":
@@ -158,8 +200,34 @@ public class Board
                     }
                     break;
                 case "bishop":
+                    if(tarCol - currCol > 0 && tarRow - currRow > 0) {
+                        for(int i = currRow, j = currCol; i <= tarRow; i++ , j++ ) {
+                            if(board[i][j] != null && board[i][j] != currPiece) {
+                                if(board[i][j].getDirection() == currPiece.getDirection()) { return false; }
+                            }
+                        }
+                    } else {
+                        for(int i = currRow, j = currCol; i >= tarRow; i-- , j++ ) {
+                            if(board[i][j] != null && board[i][j] != currPiece) {
+                                if(board[i][j].getDirection() == currPiece.getDirection()) { return false; }
+                            }
+                        }
+                    }
                     break;
                 case "rook":
+                    if(currRow == tarRow) {
+                        for(int i = currCol; i <= tarCol; i++) {
+                            if(board[tarRow][i] != null && board[tarRow][i] != currPiece) {
+                                if(board[tarRow][i].getDirection() == currPiece.getDirection()) { return false; }
+                            }
+                        }
+                    } else {
+                        for(int i = currRow; i <= tarRow; i++) {
+                            if(board[i][tarCol] != null && board[i][tarCol] != currPiece) {
+                                if(board[i][tarCol].getDirection() == currPiece.getDirection()) { return false; }
+                            }
+                        }
+                    }
                     break;
                 default:
                     tarRow = targetLocation / 10;
@@ -220,13 +288,21 @@ public class Board
             //     output.append(board[row][col]);
             // }
             for(int col = 0; col < board.length; col++) {
-                output.append("[ ");
+                output.append("[");
                 if(board[row][col] == null) {
-                    output.append("　　");
+                    output.append(" 　　 ");
                 } else {
-                    output.append(board[row][col]);
+                    if(board[row][col].getDirection() == -1) {
+                        output.append("=");
+                        output.append(board[row][col]);
+                        output.append("=");
+                    } else {
+                        output.append("-");
+                        output.append(board[row][col]);
+                        output.append("-");
+                    }
                 }
-                output.append(" ]");
+                output.append("]");
             }
             output.append("\n");
         }

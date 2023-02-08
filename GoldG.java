@@ -1,8 +1,10 @@
-public class GoldG extends Piece {
+public class GoldG extends Piece
+{
     public GoldG(int direction)
     {
         this.direction = direction;
         upgrade = true;
+        pieceType = "gold";
         pieceName = "金将";
     }
 
@@ -26,5 +28,8 @@ public class GoldG extends Piece {
     }
 
     public void promote()
+    {}
+
+    public void reset()
     {}
 }

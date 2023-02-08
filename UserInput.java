@@ -1,7 +1,8 @@
 import java.util.Scanner;
 import java.lang.StringBuilder;
 
-public class UserInput {
+public class UserInput
+{
     private final Scanner USER;
     private final StringBuilder build = new StringBuilder();
 

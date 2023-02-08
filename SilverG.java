@@ -4,6 +4,7 @@ public class SilverG extends Piece
     {
         this.direction = direction;
         upgrade = false;
+        pieceType = "silver";
         pieceName = "銀将";
     }
 
@@ -35,6 +36,14 @@ public class SilverG extends Piece
     public void promote()
     {
         upgrade = true;
+        pieceType = "gold";
         pieceName = "金　";
+    }
+
+    public void reset()
+    {
+        upgrade = false;
+        pieceType = "silver";
+        pieceName = "銀将";
     }
 }
