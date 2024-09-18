@@ -2,8 +2,9 @@
 /***
  * Represents a king piece from the Japanese game of Shogi.
  * 
- * The shogi king moves in the same fashion to the chess king, able to move one square in any direction.
- * This piece does not have a promotion option.
+ * The shogi king moves in the same fashion to the chess king, able to move one
+ * square in any direction.
+ * - This piece does not have a promotion option.
  ***/
 public class King extends Piece
 {
@@ -31,9 +32,11 @@ public class King extends Piece
         int colDist = currLocation % 10 - targetLocation % 10;
 
         // Regular king movement
-        return rowDist == 0 && colDist == 0
-            ? false
-            : colDist >= -1 && colDist <= 1 && rowDist >= -1 && rowDist <= 1;
+        // If there is a change in position...
+        return rowDist != 0 && colDist != 0
+            // ...check if it is one space in a direction.
+            ? colDist >= -1 && colDist <= 1 && rowDist >= -1 && rowDist <= 1
+            : false;
     }
 
     public void promote()
