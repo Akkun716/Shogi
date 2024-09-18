@@ -1,6 +1,6 @@
 
 /***
- * Represents a King piece from the Japanese game of Shogi.
+ * Represents a king piece from the Japanese game of Shogi.
  * 
  * The shogi king moves in the same fashion to the chess king, able to move one square in any direction.
  * This piece does not have a promotion option.
