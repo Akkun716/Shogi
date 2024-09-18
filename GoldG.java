@@ -1,8 +1,10 @@
 /***
- * The gold piece is unique to shogi with a distinct movement style. This piece can move
- * one space vertically, horizontally, and the diagonals in the direction it is facing.
- * This is to say it can't move to the "backward" diagonals. This is a piece that can NOT
- * be promoted.
+ * Represent a gold general piece from the Japanese game of Shogi.
+ * 
+ * The gold piece is unique to shogi with a distinct movement style. This piece
+ * moves similar to the king piece: one space in every direction, EXCEPT the
+ * "backward" diagonals.
+ * - This piece does not have a promotion option.
  ***/
 public class GoldG extends Piece
 {
@@ -24,15 +26,14 @@ public class GoldG extends Piece
         int rowDist = currLocation / 10 - targetLocation / 10;
         int colDist = currLocation % 10 - targetLocation % 10;
 
-        /* Regular gold general movement:
-         * 1) First checks if column changes to determine if horizontal movement included.
-         *    Then checks target row value
-         * 2) Otherwise, check if target row is one above or below gold general */
-        if(colDist == direction || colDist == direction * -1) {
-            return rowDist == 0 || rowDist == direction;
-        } else {
-            return rowDist == direction || rowDist == direction * -1;
-        }
+        // Regular gold general movement:
+        // If there is a column change (one space left or right)...
+        return colDist == 1 || colDist == -1
+            // ...check if the piece stays in the same row or moves one space
+            // "forward"
+            ? rowDist == 0 || rowDist == direction
+            // Else, check if the piece moves one space "forward" or "backward"
+            : rowDist == 1 || rowDist == -1;
     }
 
     public void promote()
