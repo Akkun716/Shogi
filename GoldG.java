@@ -1,7 +1,7 @@
 /***
  * Represent a gold general piece from the Japanese game of Shogi.
  * 
- * The gold piece is unique to shogi with a distinct movement style. This piece
+ * The gold general is unique to shogi with a distinct movement style. This piece
  * moves similar to the king piece: one space in every direction, EXCEPT the
  * "backward" diagonals.
  * - This piece does not have a promotion option.

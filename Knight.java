@@ -37,7 +37,7 @@ public class Knight extends Piece
         } else {
             // If the column distance is one space to the right or left...
             return colDist == -1 || colDist == 1
-                // ...check if the piece is moving two spaces "forward"
+                // ...check if the piece is moving two spaces "forward".
                 ? rowDist == direction * 2
                 : false;
         }
