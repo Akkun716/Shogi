@@ -1,3 +1,12 @@
+/***
+ * Represents a rook piece from the Japanese game of Shogi.
+ * 
+ * The shogi rook moves in a similar fashion to the chess rook, able to move
+ * vertically and horizontally freely as long as there is no piece blocking its
+ * path.
+ * - When promoted, this piece gains the option to move one square
+ *   diagonally instead of moving vertically or horizontally.
+ ***/
 public class Rook extends Piece
 {
     public Rook(int direction)
@@ -13,17 +22,19 @@ public class Rook extends Piece
 
     public boolean isValid(int currLocation, int targetLocation)
     {
-        int rowDist = currLocation / 10 - targetLocation / 10;
-        int colDist = currLocation % 10 - targetLocation % 10;
+        // Recall the locations are represented as a 2-digit integer with the
+        // 1st int being the row and the second as the column.
+        int rowDistance = currLocation / 10 - targetLocation / 10;
+        int colDistance = currLocation % 10 - targetLocation % 10;
 
         /* Promoted rook movement (regular rook + one space vertical or horizontal) */
-        if(upgrade && colDist != 0 && rowDist != 0) {
-            return (colDist == -1 || colDist == 1) && (rowDist == -1 || rowDist == 1);
+        if(upgrade && colDistance != 0 && rowDistance != 0) {
+            return (colDistance == -1 || colDistance == 1) && (rowDistance == -1 || rowDistance == 1);
         /* Regular rook movement */
         } else {
-            return colDist == 0
-                ? rowDist != 0
-                : rowDist == 0;
+            return colDistance == 0
+                ? rowDistance != 0
+                : rowDistance == 0;
         }
     }
 

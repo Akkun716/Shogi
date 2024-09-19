@@ -28,14 +28,14 @@ public class King extends Piece
     {
         // Recall the locations are represented as a 2-digit integer with the 1st int
         // being the row and the second as the column.
-        int rowDist = currLocation / 10 - targetLocation / 10;
-        int colDist = currLocation % 10 - targetLocation % 10;
+        int rowDistance = currLocation / 10 - targetLocation / 10;
+        int colDistance = currLocation % 10 - targetLocation % 10;
 
         // Regular king movement
         // If there is a change in position...
-        return rowDist != 0 && colDist != 0
+        return rowDistance != 0 && colDistance != 0
             // ...check if it is one space in a direction.
-            ? colDist >= -1 && colDist <= 1 && rowDist >= -1 && rowDist <= 1
+            ? colDistance >= -1 && colDistance <= 1 && rowDistance >= -1 && rowDistance <= 1
             : false;
     }
 

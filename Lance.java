@@ -24,25 +24,25 @@ public class Lance extends Piece
     {
         // Recall the locations are represented as a 2-digit integer with the
         // 1st int being the row and the second as the column.
-        int rowDist = currLocation / 10 - targetLocation / 10;
-        int colDist = currLocation % 10 - targetLocation % 10;
+        int rowDistance = currLocation / 10 - targetLocation / 10;
+        int colDistance = currLocation % 10 - targetLocation % 10;
 
         // Promoted lance movement (look to GoldG class for description).
         if(upgrade) {
-            return colDist == 1 || colDist == -1
-                ? rowDist == 0 || rowDist == direction
-                : rowDist == 1 || rowDist == -1;
+            return colDistance == 1 || colDistance == -1
+                ? rowDistance == 0 || rowDistance == direction
+                : rowDistance == 1 || rowDistance == -1;
 
         // Regular lance movement
         } else {
             // If there is no column change, yet there is a row change...
-            if(colDist == 0 && rowDist != 0) {
+            if(colDistance == 0 && rowDistance != 0) {
                 // If the piece is meant to move up...
                 return direction == 1
                     // ...check if the row change moves the piece up.
-                    ? rowDist > 0
+                    ? rowDistance > 0
                     // Else, check if the row change moves the piece down.
-                    : rowDist < 0;
+                    : rowDistance < 0;
             } else {
                 return false;
             }

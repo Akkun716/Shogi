@@ -1,7 +1,10 @@
 /***
- * The shogi bishop moves in a similar fashion to the chess bishop, able to move diagonally
- * freely as long as there is no piece blocking its path. Once the piece is promoted, it gains
- * the option to move one square vertically or horizontally.
+ * Represents a bishop piece from the Japanese game of Shogi.
+ * 
+ * The shogi bishop moves in a similar fashion to the chess bishop, able to
+ * move diagonally freely as long as there is no piece blocking its path.
+ * - When promoted, this piece gains the option to move one square
+ *   vertically or horizontally instead of moving diagonally.
  ***/
 public class Bishop extends Piece
 {
@@ -16,22 +19,25 @@ public class Bishop extends Piece
     public Bishop()
     { this(1); }
 
-    // Recall the locations are represented as a 2-digit integer with the 1st int
-    // being the row and the secodn as the column.
     public boolean isValid(int currLocation, int targetLocation)
     {
-        int rowDist = currLocation / 10 - targetLocation / 10;
-        int colDist = currLocation % 10 - targetLocation % 10;
+        // Recall the locations are represented as a 2-digit integer with the
+        // 1st int being the row and the second as the column.
+        int rowDistance = currLocation / 10 - targetLocation / 10;
+        int colDistance = currLocation % 10 - targetLocation % 10;
 
         // Promoted bishop movement (regular + one space horizontal or vertical)
-        if(upgrade && (colDist == 0 || rowDist == 0)) {
-            return colDist == 0
-                ? rowDist == 1 || rowDist == -1
-                : colDist == 1 || colDist == -1;
+        if(upgrade && (colDistance == 0 || rowDistance == 0)) {
+            return colDistance == 0
+                ? rowDistance == 1 || rowDistance == -1
+                : colDistance == 1 || colDistance == -1;
+
         // Regular bishop movement
         } else {
-            return rowDist != 0 && colDist != 0
-                ? rowDist / colDist == -1 || rowDist / colDist == 1
+            // If there is both a column and row change...
+            return rowDistance != 0 && colDistance != 0
+                // ...check if the target destination is along a diagonal.
+                ? rowDistance / colDistance == -1 || rowDistance / colDistance == 1
                 : false;
         }
     }
