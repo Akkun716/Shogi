@@ -32,6 +32,7 @@ public class SilverG extends Piece
             return colDistance == 1 || colDistance == -1
                 ? rowDistance == 0 || rowDistance == direction
                 : rowDistance == 1 || rowDistance == -1;
+        
         // Regular silver general movement
         } else {
             // If there is a column change...

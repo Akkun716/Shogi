@@ -31,7 +31,7 @@ public class GoldG extends Piece
         // If there is a column change (one space left or right)...
         return colDistance == 1 || colDistance == -1
             // ...check if the piece stays in the same row or moves one space
-            // "forward"
+            // "forward".
             ? rowDistance == 0 || rowDistance == direction
             // Else, check if the piece moves one space "forward" or "backward"
             : rowDistance == 1 || rowDistance == -1;

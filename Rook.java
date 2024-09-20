@@ -27,13 +27,17 @@ public class Rook extends Piece
         int rowDistance = currLocation / 10 - targetLocation / 10;
         int colDistance = currLocation % 10 - targetLocation % 10;
 
-        /* Promoted rook movement (regular rook + one space vertical or horizontal) */
+        // Promoted rook movement (regular rook + one space vertical or horizontal)
         if(upgrade && colDistance != 0 && rowDistance != 0) {
             return (colDistance == -1 || colDistance == 1) && (rowDistance == -1 || rowDistance == 1);
-        /* Regular rook movement */
+        
+        // Regular rook movement
         } else {
+            // If there was no column change...
             return colDistance == 0
+                // ...confirm there was a row change.
                 ? rowDistance != 0
+                // Else, check if there was no row change.
                 : rowDistance == 0;
         }
     }
