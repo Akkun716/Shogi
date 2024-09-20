@@ -96,22 +96,30 @@ public class UserInput
      * @param prompt The message displayed to the user.
      * @return The validated boolean input from the user.
      */
-    public boolean trueFalseInput(String prompt)
+    public boolean booleanInput(String prompt, String choice1, String choice2)
     {
+        String errorString = "That input is invalid. Enter one of the following: ";
         build.setLength(0);
-        build.append("That input is invalid. Enter one of the following: [T]rue, [F]alse\n");
+        build.append("[");
+        build.append(choice1.charAt(0));
+        build.append("]");
+        build.append(choice1.substring(1));
+        build.append(" or [");
+        build.append(choice2.charAt(0));
+        build.append("]");
+        build.append(choice2.substring(1));
         
         String output;
         while(true) {
             System.out.printf("%s", prompt);
             output = USER.next();
             // User has the choice to enter the first letter or the whole word.
-            if(output.equalsIgnoreCase("t")
-                    || output.equalsIgnoreCase("true")) {
+            if(output.equalsIgnoreCase(choice1.substring(0, 1))
+                    || output.equalsIgnoreCase(choice1)) {
                 return true;
 
-            } else if(output.equalsIgnoreCase("f")
-                    || output.equalsIgnoreCase("false")) {
+            } else if(output.equalsIgnoreCase(choice2.substring(0, 1))
+                    || output.equalsIgnoreCase(choice2)) {
                 return false;
             }
 
