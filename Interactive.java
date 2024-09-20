@@ -8,7 +8,8 @@ public class Interactive
      * Sets a piece on the board at the specified location.
      * 
      * @param board The board on which to set the piece.
-     * @param autoSet If true, use the provided row and column; otherwise, prompt the user for the location.
+     * @param autoSet If true, use the provided row and column; otherwise,
+     * prompt the user for the location.
      * @param setRow The row where the piece should be set if autoSet is true.
      * @param setCol The column where the piece should be set if autoSet is true.
      */
