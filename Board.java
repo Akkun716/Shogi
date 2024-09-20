@@ -1,19 +1,24 @@
 import java.util.ArrayList;
 
+/***
+ * Represents a shogi board.
+ * 
+ * The board holds all the pieces in a 2D array and the class contains methods 
+ * to check the existing pieces on the board.
+ ***/
 public class Board
 {
-    private final String[] PIECES = {"pawn", "lance", "knight", "silver", "gold", "bishop", "rook", "king"};
+    private final String[] PIECES =
+        {"pawn", "lance", "knight", "silver", "gold", "bishop", "rook", "king"};
     private final int BOARD_MAX = 9;
     private Piece board[][];
     private ArrayList<Piece> player1, player2;
 
     public Board()
     {
-        //board = new Tile[9][9];
         board = new Piece[BOARD_MAX][BOARD_MAX];
         for(int row = 0; row < board.length; row++) {
             for(int col = 0; col < board.length; col++) {
-                //board[row][col] = new Tile(row * 10 + col);
                 board[row][col] = null;
             }
         }
@@ -21,9 +26,19 @@ public class Board
         player2 = new ArrayList<>();
     }
 
+    /*
+     * Returns the number of squares in a row and column of the board.
+     * 
+     * @return The number of squares in the rows and columns.
+     */
     public int size()
     { return BOARD_MAX; }
 
+    /*
+     * Returns an array of the names of valid pieces in the game of Shogi.
+     * 
+     * @return A string array of the names of usable pieces within Shogi.
+     */
     public String[] validPieces()
     { return PIECES; }
 
@@ -34,7 +49,6 @@ public class Board
      */
     public void removePiece(int row, int col)
     {
-        //board[row][col].clear();
         board[row][col] = null;
     }
    
@@ -175,65 +189,89 @@ public class Board
     public boolean isValid(int currLocation, int targetLocation)
     {
         Piece currPiece = board[currLocation / 10][currLocation % 10];
+        int direction = currPiece.getDirection();
         if(currPiece.isValid(currLocation, targetLocation)) {
             System.out.printf("The location is valid!\n");
-            /* This "rearranges" the current and target rows and columns for simpler loop propogation */
-            int currRow, currCol, tarRow, tarCol;
-            if(currLocation / 10 > targetLocation / 10 || currLocation % 10 > targetLocation % 10) {
-                currRow =  targetLocation / 10;
-                currCol =  targetLocation % 10;
-                tarRow = currLocation / 10;
-                tarCol = currLocation % 10;
-            } else {
-                currRow =  currLocation / 10;
-                currCol =  currLocation % 10;
-                tarRow = targetLocation / 10;
-                tarCol = targetLocation % 10;
-            }
+            int currRow =  currLocation / 10;
+            int currCol =  currLocation % 10;
+            int tarRow = targetLocation / 10;
+            int tarCol = targetLocation % 10;
 
             switch(currPiece.pieceType()) {
                 case "lance":
-                    for(int i = currRow; i <= tarRow; i++) {
-                        if(board[i][tarCol] != null && board[i][tarCol] != currPiece) {
-                            if(board[i][tarCol].getDirection() == currPiece.getDirection()) { return false; }
+                    // Check the spaces "in front" of the lance.
+                    for(int i = currRow; i <= tarRow; i+=direction) {
+                        if(board[i][tarCol] != null) {
+                            // If the checked piece is on the same "side"...
+                            if(board[i][tarCol].getDirection() == direction)
+                            { return false; }
                         }
                     }
                     break;
+
                 case "bishop":
-                    if(tarCol - currCol > 0 && tarRow - currRow > 0) {
-                        for(int i = currRow, j = currCol; i <= tarRow; i++ , j++ ) {
-                            if(board[i][j] != null && board[i][j] != currPiece) {
-                                if(board[i][j].getDirection() == currPiece.getDirection()) { return false; }
-                            }
-                        }
+                    // Choose move direction based on the target location.
+                    int rowMove;
+                    if(tarRow == currRow) {
+                        rowMove = 0;
                     } else {
-                        for(int i = currRow, j = currCol; i >= tarRow; i-- , j++ ) {
-                            if(board[i][j] != null && board[i][j] != currPiece) {
-                                if(board[i][j].getDirection() == currPiece.getDirection()) { return false; }
-                            }
+                        rowMove = tarRow > currRow ? 1 : -1;
+                    }
+
+                    int colMove;
+                    if(tarCol == currCol) {
+                        colMove = 0;
+                    } else {
+                        colMove = tarCol > currCol ? 1 : -1;
+                    }
+                    
+                    // If the bishop is promoted and there is no column or row
+                    // change...
+                    if(currPiece.isPromoted() && (colMove == 0 || rowMove == 0)) {
+                        // ...and if the target location is not empty...
+                        return board[tarRow][tarCol] != null
+                            // ...check if the direction of the piece are NOT
+                            // the same.
+                            ? board[tarRow][tarCol].getDirection() != direction
+                            : true;
+                    }
+
+                    // Regular bishop movement: Start check from the next space.
+                    for(int i = currRow + rowMove, j = currCol + colMove;
+                            i <= tarRow; i+=rowMove, j+=colMove) {
+                        if(board[i][j] != null) {
+                            if(board[i][j].getDirection() == direction)
+                            { return false; }
                         }
                     }
                     break;
+
                 case "rook":
+                    // If there is no row change...
                     if(currRow == tarRow) {
-                        for(int i = currCol; i <= tarCol; i++) {
-                            if(board[tarRow][i] != null && board[tarRow][i] != currPiece) {
-                                if(board[tarRow][i].getDirection() == currPiece.getDirection()) { return false; }
+                        // ...check the horizontal spaces to traverse.
+                        for(int i = currCol + 1; i <= tarCol; i++) {
+                            if(board[tarRow][i] != null) {
+                                if(board[tarRow][i].getDirection() == direction)
+                                { return false; }
                             }
                         }
+
+                    // Else, check the vertical spaces to traverse.
                     } else {
-                        for(int i = currRow; i <= tarRow; i++) {
-                            if(board[i][tarCol] != null && board[i][tarCol] != currPiece) {
-                                if(board[i][tarCol].getDirection() == currPiece.getDirection()) { return false; }
+                        for(int i = currRow + 1; i <= tarRow; i++) {
+                            if(board[i][tarCol] != null) {
+                                if(board[i][tarCol].getDirection() == direction)
+                                { return false; }
                             }
                         }
                     }
                     break;
+
                 default:
-                    tarRow = targetLocation / 10;
-                    tarCol = targetLocation % 10;
                     if(board[tarRow][tarCol] != null) {
-                        if(board[tarRow][tarCol].getDirection() == currPiece.getDirection()) { return false; }
+                        if(board[tarRow][tarCol].getDirection() == direction)
+                        { return false; }
                     } 
             }
             return true;
@@ -242,6 +280,9 @@ public class Board
         return false;
     }
 
+    /** 
+     * 
+    */
     public boolean movePiece(int currRow, int currCol, int tarRow, int tarCol)
     {
         if(isValid(currRow * 10 + currCol, tarRow * 10 + tarCol)) {
@@ -261,6 +302,10 @@ public class Board
         }
     }
 
+    /**
+     *
+     * @return String format of the board.
+     */
     public String printAll()
     {
         StringBuilder output = new StringBuilder();
@@ -280,13 +325,9 @@ public class Board
     {
         StringBuilder output = new StringBuilder();
         for(int row = 0; row < board.length; row++) {
-            /* Row number marker */
+            // Row number marker
             output.append(row);
             output.append(" ");
-            /* Tiles (and pieces if applicable) */
-            // for(int col = 0; col < board.length; col++) {
-            //     output.append(board[row][col]);
-            // }
             for(int col = 0; col < board.length; col++) {
                 output.append("[");
                 if(board[row][col] == null) {
