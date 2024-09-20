@@ -1,17 +1,19 @@
 import java.util.ArrayList;
 
 /***
- * Represents a shogi board.
+ * Represents a board from the Japanese game of Shogi.
  * 
  * The board holds all the pieces in a 2D array and the class contains methods 
- * to check the existing pieces on the board.
+ * to set, edit, or check the pieces on the board.
  ***/
 public class Board
 {
     private final String[] PIECES =
         {"pawn", "lance", "knight", "silver", "gold", "bishop", "rook", "king"};
+    // Represents the maximum number of spaces in a row or column.
     private final int BOARD_MAX = 9;
     private Piece board[][];
+    // Serves as the graveyard for pieces each player captured.
     private ArrayList<Piece> player1, player2;
 
     public Board()
@@ -26,35 +28,39 @@ public class Board
         player2 = new ArrayList<>();
     }
 
-    /*
+    /**
      * Returns the number of squares in a row and column of the board.
      * 
      * @return The number of squares in the rows and columns.
      */
     public int size()
-    { return BOARD_MAX; }
+    { 
+        return board.length; 
+    }
 
-    /*
+    /**
      * Returns an array of the names of valid pieces in the game of Shogi.
      * 
      * @return A string array of the names of usable pieces within Shogi.
      */
     public String[] validPieces()
-    { return PIECES; }
+    { 
+        return PIECES; 
+    }
 
     /** 
-     * Removes the piece on the board at the specified loaction
-     * @param row int representing row val of piece
-     * @param col int representing col val of piece
+     * Removes the piece on the board at the specified location.
+     * 
+     * @param row int representing row val of piece.
+     * @param col int representing col val of piece.
      */
     public void removePiece(int row, int col)
-    {
-        board[row][col] = null;
-    }
+    { board[row][col] = null; }
    
     /**
-     * Clears the board of pieces in the specified row
-     * @param row int representing row to clear
+     * Clears the board of pieces in the specified row.
+     * 
+     * @param row int representing row to clear.
      */
     public void clearRow(int row)
     {
@@ -64,8 +70,9 @@ public class Board
     }
 
     /**
-     * Clears the board of pieces in the specified column
-     * @param col int representing column to clear
+     * Clears the board of pieces in the specified column.
+     * 
+     * @param col int representing column to clear.
      */
     public void clearCol(int col)
     {
@@ -75,7 +82,7 @@ public class Board
     }
 
     /**
-     * Clears the board of all pieces
+     * Clears the board of all pieces.
      */
     public void clearBoard()
     {
@@ -85,46 +92,48 @@ public class Board
     }
 
     /** 
-     * Creates the specified piece on the board at the specified loaction
-     * @param row int representing row val of piece to place
-     * @param col int representing col val of piece to place
-     * @param piece the piece type to be placed
-     * @param gote boolean represnting player with "white" pieces (moves Top to Bottom)
+     * Creates the specified piece on the board at the specified location.
+     * 
+     * @param row int representing row val of piece to place.
+     * @param col int representing col val of piece to place.
+     * @param piece the piece type to be placed.
+     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
      */
     public void createPiece(String piece, int row, int col, boolean gote)
     {
         switch(piece) {
             case "lance":
-                board[row][col] = new Lance(gote ? -1 : 1);
+                board[row][col] = new Lance(gote ? 1 : -1);
                 break;
             case "knight":
-                board[row][col] = new Knight(gote ? -1 : 1);
+                board[row][col] = new Knight(gote ? 1 : -1);
                 break;
             case "silver":
-                board[row][col] = new SilverG(gote ? -1 : 1);
+                board[row][col] = new SilverG(gote ? 1 : -1);
                 break;
             case "gold":
-                board[row][col] = new GoldG(gote ? -1 : 1);
+                board[row][col] = new GoldG(gote ? 1 : -1);
                 break;
             case "bishop":
-                board[row][col] = new Bishop(gote ? -1 : 1);
+                board[row][col] = new Bishop(gote ? 1 : -1);
                 break;
             case "rook":
-                board[row][col] = new Rook(gote ? -1 : 1);
+                board[row][col] = new Rook(gote ? 1 : -1);
                 break;
             case "king":
-                board[row][col] = new King(gote ? -1 : 1);
+                board[row][col] = new King(gote ? 1 : -1);
                 break;
             default:
-                board[row][col] = new Pawn(gote ? -1 : 1);
+                board[row][col] = new Pawn(gote ? 1 : -1);
         }
     }
 
     /**
-     * Set all tiles the specified row with specified pieces
-     * @param row int representing row to clear
-     * @param piece String of the name of the piece to be populated within the row
-     * @param gote boolean represnting player with "white" pieces (moves Top to Bottom)
+     * Set all tiles the specified row with specified pieces.
+     * 
+     * @param row int representing row to clear.
+     * @param piece String of the name of the piece to be populated within the row.
+     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
      */
     public void createRow(String piece, int row, boolean gote)
     {
@@ -133,6 +142,26 @@ public class Board
         }
     }
 
+    /**
+     * Set all tiles in the specified column with specified pieces.
+     * 
+     * @param col int representing column to populate.
+     * @param piece String of the name of the piece to be populated within the column.
+     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
+     */
+    public void createCol(String piece, int col, boolean gote)
+    {
+        for(int row = 0; row < board.length; row++) {
+            createPiece(piece, row, col, gote);
+        }
+    }
+
+    /**
+     * Set the row as initially set in a typical shogi game.
+     * 
+     * @param row int representing the row to set.
+     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
+     */
     public void createDefaultKingRow(int row, boolean gote)
     {
         createPiece("lance", row, 0, gote);
@@ -147,11 +176,12 @@ public class Board
     }
 
     /** 
-     * Sets the specified piece on the board at the specified loaction
-     * @param currRow int representing original row of piece to be set
-     * @param currCol int representing original col of piece to be set
-     * @param tarRow int representing target row of piece to be set 
-     * @param tarCol int representing target col of piece to be set
+     * Sets the specified piece on the board at the specified location.
+     * 
+     * @param currRow int representing original row of piece to be set.
+     * @param currCol int representing original col of piece to be set.
+     * @param tarRow int representing target row of piece to be set.
+     * @param tarCol int representing target col of piece to be set.
      */
     public void setPiece(int currRow, int currCol, int tarRow, int tarCol)
     {
@@ -160,9 +190,10 @@ public class Board
     }
 
     /**
-     * Set the target row to all tiles the current row
-     * @param currRow int representing the curr row to be set
-     * @param tarRow int representing the target row to set
+     * Set the target row to all tiles the current row.
+     * 
+     * @param currRow int representing the curr row to be set.
+     * @param tarRow int representing the target row to set.
      */
     public void setRow(int currRow, int tarRow)
     {
@@ -171,9 +202,19 @@ public class Board
         }
     }
 
+    /**
+     * Retrieves the piece at a given location.
+     * 
+     * @param row int representing the row of the piece.
+     * @param col int representing the column of the piece.
+     * @return The piece at the specified location, or null if the location is empty.
+     */
     public Piece getPiece(int row, int col)
     { return board[row][col]; }
     
+    /**
+     * Set the board in the default layout of a shogi game.
+     */
     public void createDefaultBoard()
     {
         createDefaultKingRow(0, true);
@@ -186,12 +227,23 @@ public class Board
         createDefaultKingRow(8, false);
     }
 
+    /**
+     * Check if the path provided is not interrupted from friendly and opposing
+     * pieces.
+     * 
+     * @param currLocation int representing the current location of the piece.
+     * @param targetLocation int representing the target location of the piece.
+     * @return boolean indicating if the path is clear.
+     */
     public boolean isValid(int currLocation, int targetLocation)
     {
+        // Recall the locations are represented as a 2-digit integer with the
+        // 1st int being the row and the second as the column.
         Piece currPiece = board[currLocation / 10][currLocation % 10];
         int direction = currPiece.getDirection();
+
+        // If the target location is a vaild move for the piece...
         if(currPiece.isValid(currLocation, targetLocation)) {
-            System.out.printf("The location is valid!\n");
             int currRow =  currLocation / 10;
             int currCol =  currLocation % 10;
             int tarRow = targetLocation / 10;
@@ -228,7 +280,6 @@ public class Board
                     // If the bishop is promoted and there is no column or row
                     // change...
                     if(currPiece.isPromoted() && (colMove == 0 || rowMove == 0)) {
-                        // ...and if the target location is not empty...
                         return board[tarRow][tarCol] != null
                             // ...check if the direction of the piece are NOT
                             // the same.
@@ -280,9 +331,16 @@ public class Board
         return false;
     }
 
-    /** 
+    /**
+     * Moves the piece from the specified current location to the target
+     * location (if valid).
      * 
-    */
+     * @param currRow int representing the current row of the piece.
+     * @param currCol int representing the current column of the piece.
+     * @param tarRow int representing the target row of the piece.
+     * @param tarCol int representing the target column of the piece.
+     * @return boolean indicating if the move was successful.
+     */
     public boolean movePiece(int currRow, int currCol, int tarRow, int tarCol)
     {
         if(isValid(currRow * 10 + currCol, tarRow * 10 + tarCol)) {
@@ -295,6 +353,12 @@ public class Board
 
     }
 
+    /**
+     * Promote the piece at the given location (if valid).
+     * 
+     * @param row
+     * @param col
+     */
     public void promote(int row, int col)
     {
         if(board[row][col] != null) {
