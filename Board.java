@@ -97,35 +97,35 @@ public class Board
      * @param row int representing row val of piece to place.
      * @param col int representing col val of piece to place.
      * @param piece the piece type to be placed.
-     * @param gote boolean representing the "attacking" player pieces (moves 
-     * bottom to top).
+     * @param gote boolean representing the "defending" player pieces (moves 
+     * top to bottom).
      */
     public void createPiece(String piece, int row, int col, boolean gote)
     {
         switch(piece) {
             case "lance":
-                board[row][col] = new Lance(gote ? 1 : -1);
+                board[row][col] = new Lance(gote ? -1 : 1);
                 break;
             case "knight":
-                board[row][col] = new Knight(gote ? 1 : -1);
+                board[row][col] = new Knight(gote ? -1 : 1);
                 break;
             case "silver":
-                board[row][col] = new SilverG(gote ? 1 : -1);
+                board[row][col] = new SilverG(gote ? -1 : 1);
                 break;
             case "gold":
-                board[row][col] = new GoldG(gote ? 1 : -1);
+                board[row][col] = new GoldG(gote ? -1 : 1);
                 break;
             case "bishop":
-                board[row][col] = new Bishop(gote ? 1 : -1);
+                board[row][col] = new Bishop(gote ? -1 : 1);
                 break;
             case "rook":
-                board[row][col] = new Rook(gote ? 1 : -1);
+                board[row][col] = new Rook(gote ? -1 : 1);
                 break;
             case "king":
-                board[row][col] = new King(gote ? 1 : -1);
+                board[row][col] = new King(gote ? -1 : 1);
                 break;
             default:
-                board[row][col] = new Pawn(gote ? 1 : -1);
+                board[row][col] = new Pawn(gote ? -1 : 1);
         }
     }
 
@@ -135,8 +135,8 @@ public class Board
      * @param row int representing row to clear.
      * @param piece String of the name of the piece to be populated within the 
      * row.
-     * @param gote boolean representing the "attacking" player pieces (moves 
-     * bottom to top).
+     * @param gote boolean representing the "defending" player pieces (moves 
+     * top to bottom).
      */
     public void createRow(String piece, int row, boolean gote)
     {
@@ -151,8 +151,8 @@ public class Board
      * @param col int representing column to populate.
      * @param piece String of the name of the piece to be populated within the 
      * column.
-     * @param gote boolean representing the "attacking" player pieces (moves 
-     * bottom to top).
+     * @param gote boolean representing the "defending" player pieces (moves 
+     * top to bottom).
      */
     public void createCol(String piece, int col, boolean gote)
     {
@@ -165,8 +165,8 @@ public class Board
      * Set the row as initially set in a typical shogi game.
      * 
      * @param row int representing the row to set.
-     * @param gote boolean representing the "attacking" player pieces (moves 
-     * bottom to top).
+     * @param gote boolean representing the "defending" player pieces (moves 
+     * top to bottom).
      */
     public void createDefaultKingRow(int row, boolean gote)
     {
@@ -250,7 +250,7 @@ public class Board
             // Else if an opposing piece should NOT be ignored...
             else if(!ignore)
             { return row * 10 + col; }
-        } 
+        }
 
         return 1;
     }
@@ -279,6 +279,19 @@ public class Board
             int tarRow = targetLocation / 10;
             int tarCol = targetLocation % 10;
 
+            // Choose move direction based on the target location.
+            int rowMove;
+            if(tarRow == currRow)
+            { rowMove = 0; }
+            else 
+            { rowMove = tarRow > currRow ? 1 : -1; }
+
+            int colMove;
+            if(tarCol == currCol)
+            { colMove = 0; }
+            else
+            { colMove = tarCol > currCol ? 1 : -1; }
+
             switch(currPiece.pieceType()) {
                 case "lance":
                     // Check the spaces "in front" of the lance.
@@ -289,20 +302,7 @@ public class Board
                     }
                     break;
 
-                case "bishop":
-                    // Choose move direction based on the target location.
-                    int rowMove;
-                    if(tarRow == currRow)
-                    { rowMove = 0; }
-                    else 
-                    { rowMove = tarRow > currRow ? 1 : -1; }
-
-                    int colMove;
-                    if(tarCol == currCol)
-                    { colMove = 0; }
-                    else
-                    { colMove = tarCol > currCol ? 1 : -1; }
-                    
+                case "bishop":                    
                     // If the bishop is promoted and there is no column or row
                     // change...
                     if(currPiece.isPromoted() && (colMove == 0 || rowMove == 0))
@@ -310,7 +310,9 @@ public class Board
 
                     // Regular bishop movement: Start check from the next space.
                     for(int i = currRow + rowMove, j = currCol + colMove;
-                            i <= tarRow; i+=rowMove, j+=colMove) {
+                            // Check if the bishop is moving "down" or "up"
+                            rowMove == 1 ? i <= tarRow : i >= tarRow
+                            ; i+=rowMove, j+=colMove) {
                         outputVal = locationCheck(i, j, direction, i == tarRow);
                         if(outputVal != 1)
                         { return outputVal; }
@@ -318,10 +320,18 @@ public class Board
                     break;
 
                 case "rook":
+                    // If the rook is promoted and there is both a column 
+                    // AND row change...
+                    if(currPiece.isPromoted() && (colMove != 0 && rowMove != 0))
+                    { return locationCheck(tarRow, tarCol, direction, true); }
+
                     // If there is no row change...
                     if(currRow == tarRow) {
                         // ...check the horizontal spaces to traverse.
-                        for(int j = currCol + 1; j <= tarCol; j++) {
+                        for(int j = currCol + colMove;
+                                // Check if the rook is moving "right" or "left"
+                                colMove == 1 ? j <= tarCol : j >= tarCol;
+                                j+=colMove) {
                             outputVal = locationCheck(tarRow, j, direction, j == tarCol);
                             if(outputVal != 1)
                             { return outputVal; }
@@ -329,7 +339,10 @@ public class Board
 
                     // Else, check the vertical spaces to traverse.
                     } else {
-                        for(int i = currRow + 1; i <= tarRow; i++) {
+                        for(int i = currRow + rowMove;
+                                // Check if the rook is moving "down" or "up"
+                                rowMove == 1 ? i <= tarRow : i >= tarRow;
+                                i+=rowMove) {
                             outputVal = locationCheck(i, tarCol, direction, i == tarRow);
                             if(outputVal != 1)
                             { return outputVal; }
@@ -411,7 +424,7 @@ public class Board
      * 
      * Each row is represented with its row number, and each column is 
      * represented with its column number. Pieces belonging to the "attacking" 
-     * player (gote) are enclosed in "-", and pieces belonging to the 
+     * player are enclosed in "-", and pieces belonging to the 
      * "defending" player are enclosed in "=".
      *
      * @return A string representation of the board.
@@ -432,7 +445,7 @@ public class Board
                 // Existing piece.
                 } else {
                     // Defending piece.
-                    if(board[row][col].getDirection() == 1) {
+                    if(board[row][col].getDirection() == -1) {
                         output.append("=");
                         output.append(board[row][col]);
                         output.append("=");
