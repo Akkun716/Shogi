@@ -97,7 +97,8 @@ public class Board
      * @param row int representing row val of piece to place.
      * @param col int representing col val of piece to place.
      * @param piece the piece type to be placed.
-     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
+     * @param gote boolean representing the "attacking" player pieces (moves 
+     * bottom to top).
      */
     public void createPiece(String piece, int row, int col, boolean gote)
     {
@@ -132,8 +133,10 @@ public class Board
      * Set all tiles the specified row with specified pieces.
      * 
      * @param row int representing row to clear.
-     * @param piece String of the name of the piece to be populated within the row.
-     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
+     * @param piece String of the name of the piece to be populated within the 
+     * row.
+     * @param gote boolean representing the "attacking" player pieces (moves 
+     * bottom to top).
      */
     public void createRow(String piece, int row, boolean gote)
     {
@@ -146,8 +149,10 @@ public class Board
      * Set all tiles in the specified column with specified pieces.
      * 
      * @param col int representing column to populate.
-     * @param piece String of the name of the piece to be populated within the column.
-     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
+     * @param piece String of the name of the piece to be populated within the 
+     * column.
+     * @param gote boolean representing the "attacking" player pieces (moves 
+     * bottom to top).
      */
     public void createCol(String piece, int col, boolean gote)
     {
@@ -160,7 +165,8 @@ public class Board
      * Set the row as initially set in a typical shogi game.
      * 
      * @param row int representing the row to set.
-     * @param gote boolean representing the "attacking" player pieces (moves bottom to top).
+     * @param gote boolean representing the "attacking" player pieces (moves 
+     * bottom to top).
      */
     public void createDefaultKingRow(int row, boolean gote)
     {
@@ -207,7 +213,8 @@ public class Board
      * 
      * @param row int representing the row of the piece.
      * @param col int representing the column of the piece.
-     * @return The piece at the specified location, or null if the location is empty.
+     * @return The piece at the specified location, or null if the location is 
+     * empty.
      */
     public Piece getPiece(int row, int col)
     { return board[row][col]; }
@@ -228,19 +235,42 @@ public class Board
     }
 
     /**
+     * Checks if the specified location is within the bounds of the board.
+     * 
+     * @param row int representing the row to check.
+     * @param col int representing the column to check.
+     * @return int indicating confirmation status: 0 for friendly obstruction,
+     * 1 for clear, 2-digit number for a premature opposing piece location.
+     */
+    private int locationCheck(int row, int col, int direction, boolean ignore) {
+        if(board[row][col] != null) {
+            // If the checked piece is on the same "side"...
+            if(board[row][col].getDirection() == direction)
+            { return 0; }
+            // Else if an opposing piece should NOT be ignored...
+            else if(!ignore)
+            { return row * 10 + col; }
+        } 
+
+        return 1;
+    }
+
+    /**
      * Check if the path provided is not interrupted from friendly and opposing
      * pieces.
      * 
      * @param currLocation int representing the current location of the piece.
      * @param targetLocation int representing the target location of the piece.
-     * @return boolean indicating if the path is clear.
+     * @return int indicating path status: 0 for friendly obstruction, 1 for
+     * clear, 2-digit number for a premature opposing piece obstruction.
      */
-    public boolean isValid(int currLocation, int targetLocation)
+    public int isValid(int currLocation, int targetLocation)
     {
         // Recall the locations are represented as a 2-digit integer with the
         // 1st int being the row and the second as the column.
         Piece currPiece = board[currLocation / 10][currLocation % 10];
         int direction = currPiece.getDirection();
+        int outputVal = 0;
 
         // If the target location is a vaild move for the piece...
         if(currPiece.isValid(currLocation, targetLocation)) {
@@ -253,47 +283,37 @@ public class Board
                 case "lance":
                     // Check the spaces "in front" of the lance.
                     for(int i = currRow; i <= tarRow; i+=direction) {
-                        if(board[i][tarCol] != null) {
-                            // If the checked piece is on the same "side"...
-                            if(board[i][tarCol].getDirection() == direction)
-                            { return false; }
-                        }
+                        outputVal = locationCheck(i, tarCol, direction, i == tarRow);
+                        if(outputVal != 1)
+                        { return outputVal; }
                     }
                     break;
 
                 case "bishop":
                     // Choose move direction based on the target location.
                     int rowMove;
-                    if(tarRow == currRow) {
-                        rowMove = 0;
-                    } else {
-                        rowMove = tarRow > currRow ? 1 : -1;
-                    }
+                    if(tarRow == currRow)
+                    { rowMove = 0; }
+                    else 
+                    { rowMove = tarRow > currRow ? 1 : -1; }
 
                     int colMove;
-                    if(tarCol == currCol) {
-                        colMove = 0;
-                    } else {
-                        colMove = tarCol > currCol ? 1 : -1;
-                    }
+                    if(tarCol == currCol)
+                    { colMove = 0; }
+                    else
+                    { colMove = tarCol > currCol ? 1 : -1; }
                     
                     // If the bishop is promoted and there is no column or row
                     // change...
-                    if(currPiece.isPromoted() && (colMove == 0 || rowMove == 0)) {
-                        return board[tarRow][tarCol] != null
-                            // ...check if the direction of the piece are NOT
-                            // the same.
-                            ? board[tarRow][tarCol].getDirection() != direction
-                            : true;
-                    }
+                    if(currPiece.isPromoted() && (colMove == 0 || rowMove == 0))
+                    { return locationCheck(tarRow, tarCol, direction, true); }
 
                     // Regular bishop movement: Start check from the next space.
                     for(int i = currRow + rowMove, j = currCol + colMove;
                             i <= tarRow; i+=rowMove, j+=colMove) {
-                        if(board[i][j] != null) {
-                            if(board[i][j].getDirection() == direction)
-                            { return false; }
-                        }
+                        outputVal = locationCheck(i, j, direction, i == tarRow);
+                        if(outputVal != 1)
+                        { return outputVal; }
                     }
                     break;
 
@@ -301,34 +321,29 @@ public class Board
                     // If there is no row change...
                     if(currRow == tarRow) {
                         // ...check the horizontal spaces to traverse.
-                        for(int i = currCol + 1; i <= tarCol; i++) {
-                            if(board[tarRow][i] != null) {
-                                if(board[tarRow][i].getDirection() == direction)
-                                { return false; }
-                            }
+                        for(int j = currCol + 1; j <= tarCol; j++) {
+                            outputVal = locationCheck(tarRow, j, direction, j == tarCol);
+                            if(outputVal != 1)
+                            { return outputVal; }
                         }
 
                     // Else, check the vertical spaces to traverse.
                     } else {
                         for(int i = currRow + 1; i <= tarRow; i++) {
-                            if(board[i][tarCol] != null) {
-                                if(board[i][tarCol].getDirection() == direction)
-                                { return false; }
-                            }
+                            outputVal = locationCheck(i, tarCol, direction, i == tarRow);
+                            if(outputVal != 1)
+                            { return outputVal; }
                         }
                     }
                     break;
 
                 default:
-                    if(board[tarRow][tarCol] != null) {
-                        if(board[tarRow][tarCol].getDirection() == direction)
-                        { return false; }
-                    } 
+                    outputVal = locationCheck(tarRow, tarCol, direction, true);
             }
-            return true;
+            return outputVal;
         }
 
-        return false;
+        return 0;
     }
 
     /**
@@ -339,18 +354,22 @@ public class Board
      * @param currCol int representing the current column of the piece.
      * @param tarRow int representing the target row of the piece.
      * @param tarCol int representing the target column of the piece.
-     * @return boolean indicating if the move was successful.
+     * @return int indicating move status: 0 for failed, 1 for success,
+     * and a 2-digit int for a premature opposing piece obstruction.
      */
-    public boolean movePiece(int currRow, int currCol, int tarRow, int tarCol)
+    public int movePiece(int currRow, int currCol, int tarRow, int tarCol)
     {
-        if(isValid(currRow * 10 + currCol, tarRow * 10 + tarCol)) {
-            setPiece(currRow, currCol, tarRow, tarCol);
-            return true;
-        } else {
-            System.out.println("That move is not valid! ");
+        int valid = isValid(currRow * 10 + currCol, tarRow * 10 + tarCol);
+        switch(valid) {
+            case 0:
+                System.out.println("That move is not valid! ");
+                break;
+            case 1:
+                setPiece(currRow, currCol, tarRow, tarCol);
+                break;
         }
-        return false;
 
+        return valid;
     }
 
     /**
@@ -361,12 +380,13 @@ public class Board
      */
     public void promote(int row, int col)
     {
-        if(board[row][col] != null) {
-            board[row][col].promote();
-        }
+        if(board[row][col] != null)
+        { board[row][col].promote(); }
     }
 
     /**
+     * Returns a string representation of the board, including the pieces on 
+     * the board and the captured pieces for both players.
      *
      * @return String format of the board.
      */
@@ -385,22 +405,39 @@ public class Board
         
     }
 
+    /**
+     * Returns a string representation of the board, including the pieces on 
+     * the board.
+     * 
+     * Each row is represented with its row number, and each column is 
+     * represented with its column number. Pieces belonging to the "attacking" 
+     * player (gote) are enclosed in "-", and pieces belonging to the 
+     * "defending" player are enclosed in "=".
+     *
+     * @return A string representation of the board.
+     */
     public String toString()
     {
         StringBuilder output = new StringBuilder();
         for(int row = 0; row < board.length; row++) {
-            // Row number marker
+            // Row number marker.
             output.append(row);
             output.append(" ");
             for(int col = 0; col < board.length; col++) {
                 output.append("[");
+                // Empty board space.
                 if(board[row][col] == null) {
                     output.append(" 　　 ");
+                   
+                // Existing piece.
                 } else {
-                    if(board[row][col].getDirection() == -1) {
+                    // Defending piece.
+                    if(board[row][col].getDirection() == 1) {
                         output.append("=");
                         output.append(board[row][col]);
                         output.append("=");
+
+                    // Attacking piece.
                     } else {
                         output.append("-");
                         output.append(board[row][col]);
@@ -412,6 +449,7 @@ public class Board
             output.append("\n");
         }
 
+        // Column marker row.
         output.append("   ");
         for(int col = 0; col < board.length; col++) {
             output.append(" 　");
