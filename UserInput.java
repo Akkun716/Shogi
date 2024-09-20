@@ -16,10 +16,12 @@ public class UserInput
 
     /**
      * Checks user integer input.
+     * 
      * @param prompt The message displayed to the user.
      * @param min The minimum acceptable integer value.
      * @param max The maximum acceptable integer value.
-     * @return The validated integer input from the user, or min - 1 if the user types "exit".
+     * @return The validated integer input from the user, or min - 1 if the user
+     * types "exit".
      */
     public int intInput(String prompt, int min, int max)
     {
@@ -53,9 +55,11 @@ public class UserInput
 
     /**
      * Prompts the user to choose from a list of valid options.
+     * 
      * @param prompt The message displayed to the user.
      * @param choices An array of valid options the user can choose from.
-     * @return The validated choice input from the user, or "exit" if the user types "exit".
+     * @return The validated choice input from the user, or "exit" if the user
+     * types "exit".
      */
     public String choiceInput(String prompt, String[] choices)
     {
@@ -93,12 +97,13 @@ public class UserInput
 
     /**
      * Prompts the user to input a boolean value.
+     * 
      * @param prompt The message displayed to the user.
      * @return The validated boolean input from the user.
      */
     public boolean booleanInput(String prompt, String choice1, String choice2)
     {
-        String errorString = "That input is invalid. Enter one of the following: ";
+        String errorString = "That input is invalid. Enter one of the valid choices: ";
         build.setLength(0);
         build.append("[");
         build.append(choice1.charAt(0));
@@ -111,7 +116,7 @@ public class UserInput
         
         String output;
         while(true) {
-            System.out.printf("%s", prompt);
+            System.out.printf("%s %s: ", prompt, build.toString());
             output = USER.next();
             // User has the choice to enter the first letter or the whole word.
             if(output.equalsIgnoreCase(choice1.substring(0, 1))
@@ -123,7 +128,7 @@ public class UserInput
                 return false;
             }
 
-            System.out.printf("%s", build.toString());
+            System.out.println(errorString);
         }
     }
 }
