@@ -42,15 +42,17 @@ public class Bishop extends Piece
         }
     }
 
-    public void promote()
+    public Piece promote()
     {
         upgrade = true;
         pieceName = "龍王";
+        return this;
     }
 
-    public void reset()
+    public Piece reset()
     {
         upgrade = false;
         pieceName = "角行";
+        return this;
     }
 }

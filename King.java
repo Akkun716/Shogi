@@ -39,9 +39,9 @@ public class King extends Piece
             : false;
     }
 
-    public void promote()
-    {}
+    public Piece promote()
+    { return this; }
     
-    public void reset()
-    {}
+    public Piece reset()
+    { return this; }
 }

@@ -36,13 +36,17 @@ public abstract class Piece
     /**
      * Updates the name of the piece and enables horizontal and vertical 
      * movement of one space.
+     * 
+     * @return the piece object itself.
      */
-    public abstract void promote();
+    public abstract Piece promote();
     
     /**
      * The piece is returned to its original form (removes promotion).
+     * 
+     * @return the piece object itself.
      */
-    public abstract void reset();
+    public abstract Piece reset();
 
     public String pieceType()
     { return pieceType; }

@@ -37,9 +37,9 @@ public class GoldG extends Piece
             : rowDistance == 1 || rowDistance == -1;
     }
 
-    public void promote()
-    {}
+    public Piece promote()
+    { return this; }
 
-    public void reset()
-    {}
+    public Piece reset()
+    { return this; }
 }

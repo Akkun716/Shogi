@@ -49,17 +49,19 @@ public class Lance extends Piece
         }
     }
 
-    public void promote()
+    public Piece promote()
     {
         upgrade = true;
         pieceType = "gold";
         pieceName = "杏　";
+        return this;
     }
 
-    public void reset()
+    public Piece reset()
     {
         upgrade = false;
         pieceType = "lance";
         pieceName = "香車";
+        return this;
     }
 }

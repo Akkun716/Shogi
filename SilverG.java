@@ -44,17 +44,19 @@ public class SilverG extends Piece
         }
     }
 
-    public void promote()
+    public Piece promote()
     {
         upgrade = true;
         pieceType = "gold";
         pieceName = "金　";
+        return this;
     }
 
-    public void reset()
+    public Piece reset()
     {
         upgrade = false;
         pieceType = "silver";
         pieceName = "銀将";
+        return this;
     }
 }

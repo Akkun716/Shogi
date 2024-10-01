@@ -43,17 +43,19 @@ public class Knight extends Piece
         }
     }
 
-    public void promote()
+    public Piece promote()
     {
         upgrade = true;
         pieceType = "gold";
         pieceName = "金　";
+        return this;
     }
 
-    public void reset()
+    public Piece reset()
     {
         upgrade = false;
         pieceType = "knight";
         pieceName = "桂馬";
+        return this;
     }
 }

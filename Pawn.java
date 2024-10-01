@@ -39,17 +39,19 @@ public class Pawn extends Piece
         }
     }
 
-    public void promote()
+    public Piece promote()
     {
         upgrade = true;
         pieceType = "gold";
         pieceName = "と　";
+        return this;
     }
 
-    public void reset()
+    public Piece reset()
     {
         upgrade = false;
         pieceType = "pawn";
         pieceName = "歩兵";
+        return this;
     }
 }
