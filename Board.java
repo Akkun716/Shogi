@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 /***
  * Represents a board from the Japanese game of Shogi.
  * 
@@ -14,7 +12,7 @@ public class Board
     private final int BOARD_MAX = 9;
     private Piece board[][];
     // Serves as the graveyard for pieces each player captured.
-    private ArrayList<Piece> player1, player2;
+    private Player player1, player2;
 
     public Board()
     {
@@ -24,8 +22,8 @@ public class Board
                 board[row][col] = null;
             }
         }
-        player1 = new ArrayList<>();
-        player2 = new ArrayList<>();
+        player1 = new Player(1);
+        player2 = new Player(-1);
     }
 
     /**
@@ -193,6 +191,18 @@ public class Board
     {
         board[tarRow][tarCol] = board[currRow][currCol];
         board[currRow][currCol] = null;
+    }
+
+    /**
+     * 
+     * @param player
+     * @param tarRow
+     * @param tarCol
+     */
+    public void takePiece(Player player, int tarRow, int tarCol) {
+        if(board[tarRow][tarCol] != null) {
+            player.addPiece(board[tarRow][tarCol].reset());
+        }
     }
 
     /**
@@ -378,6 +388,10 @@ public class Board
                 System.out.println("That move is not valid! ");
                 break;
             case 1:
+                // Identify which direction the piece is moving and 
+                Player currPlayer =
+                    board[currRow][currCol].getDirection() == 1 ? player1 : player2;
+                takePiece(currPlayer, tarRow, tarCol);
                 setPiece(currRow, currCol, tarRow, tarCol);
                 break;
         }
@@ -406,14 +420,10 @@ public class Board
     public String printAll()
     {
         StringBuilder output = new StringBuilder();
-        output.append("===Top Graveyard===\n");
-        output.append(player1);
-        output.append("\n========\n");
-        output.append(board.toString());
-        output.append("   ");
-        output.append("\n===Bottom Graveyard===\n");
-        output.append(player2);
-        output.append("\n========\n");
+        output.append(player2.toString());
+        output.append("\n");
+        output.append(toString());
+        output.append(player1.toString());
         return output.toString();
         
     }
