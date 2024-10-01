@@ -65,7 +65,7 @@ public class Interactive
 
         // Select and move piece loop.
         while(true) {
-            System.out.printf("%s", board.toString());
+            System.out.printf("%s", board.printAll());
             currRow = USER.intInput("Select piece row number: ", 0, board.size());
             if(currRow < 0)
             { break; }
@@ -81,7 +81,7 @@ public class Interactive
             if(!board.getPiece(currRow, currCol).isPromoted()) {
                 if(USER.booleanInput("Promote piece?", "True", "False")) {
                     board.promote(currRow, currCol);
-                    System.out.printf("%s", board.toString());
+                    System.out.printf("%s", board.printAll());
                 }
             }
 
