@@ -1,19 +1,30 @@
 import java.util.LinkedList;
 
+/***
+ * Represents an individual player and pieces they have captured from the game.
+ * 
+ * The player has a selected direction and a collection of captured pieces from
+ * their opponent. The player also has the option of using those pieces against
+ * the opponent.
+ ***/
 public class Player {
     LinkedList<Piece> collection;
     int direction;
-
-    public Player() {
-        collection = new LinkedList<>();
-        this.direction = 1;
-    }
 
     public Player(int direction) {
         collection = new LinkedList<>();
         this.direction = direction;
     }
 
+    public Player() {
+        this(1);
+    }
+
+    /**
+     * Adds a piece to the player's captured collection.
+     * 
+     * @param piece Piece object representing the captured piece.
+     */
     public void addPiece(Piece piece) {
         for(int i = 0; i < collection.size(); i++) {
             if(collection.get(i).pieceType().equals(piece.pieceType())) {
@@ -25,6 +36,12 @@ public class Player {
         collection.add(piece);
     }
 
+    /**
+     * Removes a piece from the Player's captured piece collection.
+     * 
+     * @param piece A string representing the piece that needs to be retrieved.
+     * @return the Piece object to removed from the collection.
+     */
     public Piece removePiece(String piece) {
         for(int i = 0; i < collection.size(); i++) {
             if(collection.get(i).pieceType().equals(piece)) {
@@ -37,6 +54,13 @@ public class Player {
         return null;
     }
 
+    /**
+     * Returns a string representation of the player's captured pieces.
+     * 
+     * The format includes the player number and a list of captured pieces,
+     * grouped by type and quantity.
+     * @return A string representing the player's captured pieces.
+     */
     public String toString() {
         StringBuilder output = new StringBuilder();
         int counter = 1;
